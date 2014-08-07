@@ -7,11 +7,11 @@
 # chkconfig: - 99 01
 # config: /etc/sysconfig/garb | /etc/default/garb
 #
-#### BEGIN INIT INFO
+### BEGIN INIT INFO
 # Provides:          garbd
-# Required-Start:    $network
+# Required-Start:    $network $local_fs
 # Should-Start:
-# Required-Stop:     $network
+# Required-Stop:     $network $local_fs
 # Should-Stop:
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
@@ -161,7 +161,7 @@ case "$1" in
   status)
 	program_status
 	;;
-  restart|reload)
+  restart|reload|force-reload)
 	restart
 	;;
   condrestart)
@@ -171,7 +171,7 @@ case "$1" in
 	fi
 	;;
   *)
-	echo $"Usage: $0 {start|stop|status|restart|reload}"
+	echo $"Usage: $0 {start|stop|status|restart|reload|force-reload}"
 	exit 2
 esac
 
