@@ -11,7 +11,7 @@ Build-Depends: check,
                libboost-program-options-dev (>= 1.41),
                libssl-dev,
                scons
-Standards-Version: 3.9.3
+Standards-Version: 3.9.5
 
 Package: percona-xtradb-cluster-galera-3.x
 Architecture: any
