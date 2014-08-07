@@ -152,8 +152,8 @@ echo "Debian binary packages built"
 echo "Testing binary packages..."
 
 # Find the .deb files that should have been created by the debian package build
-for DEB_FILE in $(basename $(find . -type f -name '*.deb' | sort | tail -n1)); do
-	echo "Testing ${DEB_FILE}..."
+for DEB_FILE in $(find . -type f -name '*.deb' | sort); do
+	echo "Testing basename ${DEB_FILE}..."
 	lintian --verbose --info --pedantic ${DEB_FILE} | tee -a ${WORKING_DIR}/lintian.log
 	echo "${DEB_FILE} tested"
 done
