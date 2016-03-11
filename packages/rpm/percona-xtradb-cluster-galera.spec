@@ -17,8 +17,6 @@
 #
 # Macros we use which are not available in all supported versions of RPM
 #
-# - defined/undefined are missing on RHEL4
-#
 %if %{expand:%{?defined:0}%{!?defined:1}}
 %define defined()       %{expand:%%{?%{1}:1}%%{!?%{1}:0}}
 %endif
@@ -63,7 +61,7 @@
 Name:		Percona-XtraDB-Cluster-galera-3
 Version:	%{galera_version}
 Release:	@@RELEASE@@.%{?dist}
-Summary:	Galera libraries of Percona XtraDB Cluster
+Summary:	Galera libraries for Percona XtraDB Cluster
 Group:		Applications/Databases
 License:	GPLv3
 URL:		http://www.percona.com/
@@ -82,10 +80,8 @@ Summary:	Garbd component of Percona XtraDB Cluster
 Group:		Applications/Databases
 Provides:       garbd3
 Requires:       %{distro_requires}
-%if 0%{?systemd}
+%if 0%{?rhel} > 6
 BuildRequires:  systemd
-%endif
-%if 0%{?systemd}
 Requires(post):   systemd
 Requires(preun):  systemd
 Requires(postun): systemd
