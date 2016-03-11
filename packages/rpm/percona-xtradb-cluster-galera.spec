@@ -180,7 +180,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %config(noreplace,missingok) %{_sysconfdir}/sysconfig/garb
 %attr(0755,nobody,nobody) %dir %{_sharedstatedir}/galera
-%if 0%{?systemd}
+%if 0%{?rhel} > 6
     %attr(0644, root, root) %{_unitdir}/garb.service
     %attr(0755,root,root) %{_bindir}/garb-systemd
 %else
