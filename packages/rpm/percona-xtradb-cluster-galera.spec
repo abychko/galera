@@ -19,10 +19,8 @@
 
 %define src_dir2 percona-xtradb-cluster-garbd-3
 %define docs2 /usr/share/doc/%{src_dir2}
-Prefix: %{_prefix}
 
-%define rhelver %(rpm -qf --qf '%%{version}\\n' /etc/redhat-release | sed -e 's/^\\([0-9]*\\).*/\\1/g')
-%if "%rhelver" == "5"
+%if 0%{?rhel} < 6
  %define boost_req boost141-devel
  %define gcc_req gcc44-c++
 %else
@@ -38,54 +36,29 @@ Prefix: %{_prefix}
  %define galera_version 3.12
 %endif
 
-%if %{undefined galera_revision}
- %define galera_revision %{revision}
-%endif
-
-%if %{undefined pxcg_revision}
- %define pxcg_revision %{revno}
-%endif
-
 %ifarch i686
  %define scons_arch arch=i686
 %else
  %define scons_arch %{nil}
 %endif
 
-
-%bcond_with systemd
-#
-%if %{with systemd}
-  %define systemd 1
-%else
-  %if 0%{?rhel} > 6
-    %define systemd 1
-  %else
-    %define systemd 0
-  %endif
-%endif
-
-%define redhatversion %(lsb_release -rs | awk -F. '{ print $1}')
-%define distribution  rhel%{redhatversion}
-
-%if "%rhel" == "7"
+%if 0%{?rhel} == "7"
     %define distro_requires           chkconfig nmap
 %else
     %define distro_requires           chkconfig nc
 %endif
 
-
 Name:		Percona-XtraDB-Cluster-galera-3
 Version:	%{galera_version}
-Release:	%{pxcg_revision}.%{?distribution}
+Release:	@@RELEASE@@.%{?dist}
 Summary:	Galera libraries of Percona XtraDB Cluster
 Group:		Applications/Databases
 License:	GPLv3
 URL:		http://www.percona.com/
 Source0:        percona-xtradb-cluster-galera-3.tar.gz
-BuildRoot:	%(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-%{arch}
 Provides: Percona-XtraDB-Cluster-galera-25 galera3
-Obsoletes: Percona-XtraDB-Cluster-galera-56 
+Obsoletes: Percona-XtraDB-Cluster-galera-56
 Conflicts: Percona-XtraDB-Cluster-galera-2
 BuildRequires:	scons check-devel glibc-devel %{gcc_req} openssl-devel %{boost_req} check-devel
 
@@ -117,19 +90,18 @@ This package contains the garb binary and init scripts.
 %setup -q -n %{src_dir}
 
 %build
-%if "%rhelver" == "5"
+%if 0%{?rhel} < 6
 export CC=gcc44
 export CXX=g++44
 %endif
-scons %{?_smp_mflags}  revno=%{galera_revision} version=%{galera_version} boost_pool=0 garb/garbd libgalera_smm.so %{scons_arch} %{scons_args}
+scons %{?_smp_mflags}  revno=@@GALERA_REVISION@@ version=%{galera_version} boost_pool=0 garb/garbd libgalera_smm.so %{scons_arch} %{scons_args}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 mkdir -p "$RPM_BUILD_ROOT"
 
 install -d $RPM_BUILD_ROOT%{_sysconfdir}/{init.d,sysconfig}
-install -m 644 $RPM_BUILD_DIR/%{src_dir}/garb/files/garb.cnf \
-    $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/garb
+install -m 644 $RPM_BUILD_DIR/%{src_dir}/garb/files/garb.cnf $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/garb
 install -d "$RPM_BUILD_ROOT/%{_bindir}"
 install -d "$RPM_BUILD_ROOT/%{_libdir}"
 install -d "$RPM_BUILD_ROOT/%{_sharedstatedir}/galera"
@@ -199,7 +171,7 @@ rm -rf $RPM_BUILD_ROOT
 %if 0%{?systemd}
     %attr(0644, root, root) %{_unitdir}/garb.service
     %attr(0755,root,root) %{_bindir}/garb-systemd
-%else 
+%else
     %attr(0755,root,root) %{_sysconfdir}/init.d/garb
 %endif
 %attr(0755,root,root) %{_bindir}/garbd
@@ -208,17 +180,17 @@ rm -rf $RPM_BUILD_ROOT
 %doc %attr(644, root, man) %{_mandir}/man8/garbd.8*
 
 %post -n Percona-XtraDB-Cluster-garbd-3
-%if 0%{?systemd}
+%if 0%{?rhel} > 6
   %systemd_post garb
 %endif
 
 %preun -n Percona-XtraDB-Cluster-garbd-3
-%if 0%{?systemd}
+%if 0%{?rhel} > 6
     %systemd_preun garb
 %endif
 
 %postun -n Percona-XtraDB-Cluster-garbd-3
-%if 0%{?systemd}
+%if 0%{?rhel} > 6
     %systemd_postun_with_restart garb
 %endif
 
