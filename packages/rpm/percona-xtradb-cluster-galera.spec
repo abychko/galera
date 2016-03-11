@@ -106,7 +106,7 @@ install -d "$RPM_BUILD_ROOT/%{_bindir}"
 install -d "$RPM_BUILD_ROOT/%{_libdir}"
 install -d "$RPM_BUILD_ROOT/%{_sharedstatedir}/galera"
 
-%if 0%{?systemd}
+%if 0%{?rhel} > 6
 install -D -m 644 $RPM_BUILD_DIR/%{src_dir}/garb/files/garb.service \
     $RPM_BUILD_ROOT/%{_unitdir}/garb.service
 install -m 755 $RPM_BUILD_DIR/%{src_dir}/garb/files/garb-systemd \
