@@ -14,6 +14,18 @@
 # Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston
 # MA  02110-1301  USA.
 
+#
+# Macros we use which are not available in all supported versions of RPM
+#
+# - defined/undefined are missing on RHEL4
+#
+%if %{expand:%{?defined:0}%{!?defined:1}}
+%define defined()       %{expand:%%{?%{1}:1}%%{!?%{1}:0}}
+%endif
+%if %{expand:%{?undefined:0}%{!?undefined:1}}
+%define undefined()     %{expand:%%{?%{1}:0}%%{!?%{1}:1}}
+%endif
+
 %define src_dir percona-xtradb-cluster-galera-3
 %define docs /usr/share/doc/%{src_dir}
 
@@ -42,7 +54,7 @@
  %define scons_arch %{nil}
 %endif
 
-%if 0%{?rhel} == "7"
+%if 0%{?rhel} > 6
     %define distro_requires           chkconfig nmap
 %else
     %define distro_requires           chkconfig nc
